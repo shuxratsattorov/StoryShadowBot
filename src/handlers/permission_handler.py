@@ -1,10 +1,10 @@
 import os
 
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
 from dotenv import load_dotenv
 
 from src.config import BOT_TOKEN
+from src.keyboards import admin_reply_keyboards
 
 load_dotenv()
 
@@ -45,7 +45,7 @@ def save_chats(chat_ids):
         f.write(f"ADMIN_CHAT_ID = {chat_ids_str}\n")
 
 
-@dp.message(Command("add_admin"))
+@dp.message(lambda message: message.text == "➕ Admin qo'shish")
 async def add_admin(message: types.Message):
     if not is_admin(message.from_user.id):
         await message.answer("❌ Sizda ushbu buyruqdan foydalanish uchun ruxsat yo‘q!")
@@ -68,7 +68,7 @@ async def add_admin(message: types.Message):
     await message.answer(f"✅ Admin {chat_id} qo‘shildi!")
 
 
-@dp.message(Command("delete_admin"))
+@dp.message(lambda message: message.text == "🪓 Admin o'chirish")
 async def delete_admin(message: types.Message):
     if not is_admin(message.from_user.id):
         await message.answer("❌ Sizda ushbu buyruqdan foydalanish uchun ruxsat yo‘q!")
@@ -92,7 +92,7 @@ async def delete_admin(message: types.Message):
     await message.answer(f"✅ Chat ID {chat_id} o‘chirildi!")
 
 
-@dp.message(Command("list_admins"))
+@dp.message(lambda message: message.text == "👤 Adminlar")
 async def show_list_admin(message: types.Message):
     chat_list = load_chats()
     if not chat_list:
@@ -104,3 +104,12 @@ async def show_list_admin(message: types.Message):
         result += f"{idx}. {chat_id}\n"
 
     await message.answer(result, parse_mode="Markdown")
+
+
+@dp.message(lambda message: message.text in ["📊 Statistika", "👤 Adminlar", "➕ Admin qo'shish", "🪓 Admin o'chirish"])
+async def show_admin_menu(message: types.Message):
+    if not is_admin(message.from_user.id):
+        await message.answer("❌ Sizda ushbu buyruqdan foydalanish uchun ruxsat yo‘q!")
+        return
+
+    await message.answer("Admin menusi:", reply_markup=admin_reply_keyboards)

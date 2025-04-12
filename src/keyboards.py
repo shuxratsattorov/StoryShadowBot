@@ -1,53 +1,85 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-from src.handlers.permission_handler import load_chats
-
-# buttons_keyboard = ReplyKeyboardMarkup(
-#     keyboard=[
-#         [
-#             KeyboardButton(text="Istoriya korish"),
-#         ],
-# [
-#             KeyboardButton(text="Chat"),
-#             KeyboardButton(text="Qullab quvatlash"),
-#         ],
-#     ],
-#     resize_keyboard=True
-# )
-#
-# admin_buttons = ReplyKeyboardMarkup(
-#     keyboard=[
-#         [
-#             KeyboardButton(text="🔒 Bloklash"),
-#             KeyboardButton(text="🔓 Blokdan ochish"),
-#         ],
-#         [
-#             KeyboardButton(text="👤 Admin"),
-#             KeyboardButton(text="📊 Statistika"),
-#         ]
-#     ]
-# )
-#
-#
-# inline_keyboard = InlineKeyboardMarkup(
-#     keyboard=[
-#         [
-#             InlineKeyboardButton(text="Huquq berish"),
-#             InlineKeyboardButton(text="Huquq olish"),
-#         ]
-#     ]
-# )
-
-profile_button = InlineKeyboardMarkup(
-    inline_keyboard=[
+user_reply_keyboards = ReplyKeyboardMarkup(
+    keyboard=[
         [
-            InlineKeyboardButton(
-                text="Joriy hikoyalarni ko'rish", callback_data="view_current_stories"
-            )
-        ]
-    ]
+            KeyboardButton(text="💌 Obunalar"),
+            KeyboardButton(text=" Premium"),
+        ],
+        [
+            KeyboardButton(text="Chatlar"),
+            KeyboardButton(text="Qo'llab quvatlash"),
+        ],
+    ],
+    resize_keyboard=True
 )
+
+admin_reply_keyboards = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="📊 Statistika"),
+            KeyboardButton(text="👤 Adminlar"),
+        ],
+        [
+            KeyboardButton(text="➕ Admin qo'shish"),
+            KeyboardButton(text="🪓 Admin o'chirish"),
+        ]
+    ],
+    resize_keyboard=True
+)
+
+
+def get_close_profile_button(username: str) -> InlineKeyboardMarkup:
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🔔 Akkaunt o'chilishi haqida xabar berish", callback_data=f"report_account_deletion:{username}"
+                )
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_profile_button(username: str) -> InlineKeyboardMarkup:
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="👀 Joriy hikoyalarni ko'rish", callback_data=f"view_current_stories:{username}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="💌 Hikoyalarga obuna bo'lish", callback_data=f"follow_to_account:{username}"
+                )
+            ]
+        ]
+    )
+    return keyboard
+
+
+def get_profile_status_button(username: str) -> InlineKeyboardMarkup:
+
+    profile_button = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="👀 Joriy hikoyalarni ko'rish", callback_data=f"view_current_stories:{username}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="💌 Hikoyalarga obuna olib tashlash", callback_data=f"follow_to_account:{username}"
+                )
+            ]
+        ]
+    )
+    return profile_button
 
 
 # async def show_admin_buttons(user_id: int):

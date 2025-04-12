@@ -1,21 +1,22 @@
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
-from aiogram import Bot, Dispatcher
-from aiogram import Router, F
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.types import Message, FSInputFile, CallbackQuery
 from instagrapi.exceptions import UserNotFound
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import CHAT_ID
-from src.instagram_api import cl
-from src.keyboards import profile_button
-from src.orm import add_user_to_db, save_search_to_db
+from src.keyboards import get_profile_button, get_close_profile_button
+from src.login_instagram import cl
+from src.orm import add_user_to_db, save_search_to_db, is_user_registered, follow_to_account, follow_exist, \
+    check_and_update_download_limit
 
 dp = Dispatcher()
-router = Router()
+log_chat_id = 'CHAT_ID'
 
 
 async def startup_answer(bot: Bot):
@@ -28,16 +29,19 @@ async def shutdown_answer(bot: Bot):
 
 @dp.message(Command("start"))
 async def start(message: Message, bot: Bot):
-    await add_user_to_db(
-        tg_id=message.from_user.id,
-        fullname=message.from_user.full_name,
-        username=message.from_user.username,
-    )
-    await message.answer(f"Salom, men InstaShadow - sizning shaxsiy Instagram kuzatuvchingiz.\n"
-                         f"Men sizga boshqa odamlarning hikoyalari anonim ravishda kuzatishga yordam beraman.\n"
-                         f"Sizni qiziqtirgan kishining foydalanuvchi nomi yoki Instagram havolasini yuboring.")
+    user_exists = await is_user_registered(message.from_user.id)
 
-    await bot.send_message(CHAT_ID, "✅ Yangi foydalanuvchi ro'yxatdan otdi!")
+    if not user_exists:
+        await add_user_to_db(
+            tg_id=message.from_user.id,
+            fullname=message.from_user.full_name,
+            username=message.from_user.username,
+        )
+        await bot.send_message(CHAT_ID, "✅ Yangi foydalanuvchi ro'yxatdan otdi!")
+
+    await message.answer(f"Salom, men Insta Shadow - sizning shaxsiy Instagram kuzatuvchingiz.\n"
+                         f"Men sizga hikoyalari anonim ravishda kuzatishga yordam beraman.\n"
+                         f"Sizni qiziqtirgan kishining foydalanuvchi nomi yoki instagram havolasini yuboring.")
 
 
 @dp.message()
@@ -45,14 +49,18 @@ async def send_profile(message: Message, bot: Bot, save_path="users_media/"):
 
     username_or_url = message.text.strip()
 
-    match = re.search(r"instagram\.com/([a-zA-Z0-9_.]+)", username_or_url)
-    username = match.group(1).split("?")[0] if match else username_or_url
+    if username_or_url.startswith("@"):
+        username = username_or_url[1:]
+    else:
+        match = re.search(r"instagram\.com/([a-zA-Z0-9_.]+)", username_or_url)
+        username = match.group(1).split("?")[0] if match else username_or_url
+
     wait_msg = await message.answer("⌛️")
 
     try:
         user_info = cl.user_info_by_username(username)
         profile_pic_url = user_info.profile_pic_url_hd
-        account_status = " - Yopiq akkaunt." if user_info.is_private else ""
+        account_status = f"`@{username}` - Yopiq akkaunt." if user_info.is_private else f"`@{username}`"
 
         if profile_pic_url:
             await save_search_to_db(
@@ -70,35 +78,47 @@ async def send_profile(message: Message, bot: Bot, save_path="users_media/"):
                 for chunk in response.iter_content(1024):
                     file.write(chunk)
 
+            if user_info.is_private:
+                profile_button = get_close_profile_button(username)
+            else:
+                profile_button = get_profile_button(username)
+
             await bot.send_photo(
                 message.chat.id,
                 FSInputFile(file_name),
-                caption=f"`@{username}`{account_status}",
+                caption=account_status,
                 parse_mode="Markdown",
                 reply_markup=profile_button
             )
+            os.remove(file_name)
 
     except UserNotFound:
-        await message.answer(f"`@{username}` profili topilmadi. Yozuv to'g'riligini tekshiring va qaytadan urinib ko'ring.", parse_mode="Markdown")
+        await message.answer(f"`@{username}` profili topilmadi.", parse_mode="Markdown")
 
     except Exception as e:
-        await message.answer(f"❌ Xatolik yuz berdi: {e}")
+        await message.answer(f"❌ Xatolik yuz berdi")
+        await bot.send_message(log_chat_id, f"❌ Xatolik yuz berdi: {e}")
 
     await bot.delete_message(message.chat.id, wait_msg.message_id)
 
 
-@router.callback_query(F.data == "view_current_stories")
+@dp.callback_query(F.data.startswith("view_current_stories"))
 async def send_stories(callback: CallbackQuery):
-    username = callback.from_user.username
-    await callback.answer("Hikoyalarni yuklab olish boshlandi...")
+    username = callback.data.split(":")[1]
+    tg_id = callback.from_user.id
+
+    if not await check_and_update_download_limit(tg_id):
+        await callback.message.answer(f"Afsuski limitga yetdingiz, limitni oshirish uchun do'stlaringzni taklif qiling!", parse_mode="Markdown")
+        return
 
     try:
         user_id = cl.user_id_from_username(username)
         stories = cl.user_stories(user_id)
 
         if not stories:
-            await callback.message.answer(f"`@{username}` profilida hozircha hech qanday hikoyalar yo‘q.", parse_mode="Markdown")
-            return
+            await callback.message.answer(f"`@{username}` profilida hozircha hech qanday hikoyalar mavjud emas.", parse_mode="Markdown")
+        else:
+            await callback.message.answer(f"Yuklanmoqda {len(stories)} hikoyalar `@{username}`",  parse_mode="Markdown")
 
         save_path = "stories_media/"
         os.makedirs(save_path, exist_ok=True)
@@ -116,8 +136,18 @@ async def send_stories(callback: CallbackQuery):
                         for chunk in response.iter_content(1024):
                             file.write(chunk)
 
-                    story_time = datetime.utcfromtimestamp(story.taken_at.timestamp()).strftime("%d.%m.%Y, %H:%M:%S UZB")
-                    caption_text = f"`@{username}` hikoyasi ({index + 1}/{len(stories)})\n\n📅 {story_time}"
+                    mentions = ' '.join([f"@{mention.user.username}" for mention in story.mentions]) if story.mentions else ''
+
+                    uzb_time = datetime.utcfromtimestamp(story.taken_at.timestamp()) + timedelta(hours=5)
+                    story_time = uzb_time.strftime("%d.%m.%Y, %H:%M:%S UZB")
+                    caption_text = (
+                        f"`@{username}` hikoyasi ({index + 1}/{len(stories)})\n\n"
+                    )
+
+                    if mentions:
+                        caption_text += f"Metka: `{mentions}`\n\n"
+
+                    caption_text += f"{story_time}"
 
                     if story.video_url:
                         await callback.message.answer_video(FSInputFile(file_name), caption=caption_text, parse_mode="Markdown")
@@ -129,7 +159,37 @@ async def send_stories(callback: CallbackQuery):
                     await callback.message.answer("Yuklab olishda xatolik yuz berdi.")
 
             except Exception as e:
-                await callback.message.answer(f"❌ {index + 1}-hikoyani yuklashda xatolik: {e}")
+                await callback.message.answer(f"❌ {index + 1}-hikoyani yuklashda xatolik")
+                await callback.bot.send_message(log_chat_id, f"❌ {index + 1}-hikoyani yuklashda xatolik: {e}")
 
     except Exception as e:
-        await callback.message.answer(f"❌ Xatolik yuz berdi: {e}")
+        await callback.message.answer(f"❌ Xatolik yuz berdi")
+        await callback.bot.send_message(log_chat_id, f"❌ Xatolik yuz berdi: {e}")
+
+
+@dp.callback_query(F.data.startswith("follow_to_account"))
+async def follow_to_accounts(callback: CallbackQuery):
+    username = callback.data.split(":")[1]
+    user_id = callback.from_user.id
+
+    account_exist = await follow_exist(tg_id=user_id, account=username)
+
+    if not account_exist:
+        await follow_to_account(tg_id=user_id, account=username)
+        await callback.message.answer(f"Siz `@{username}` ga obuna bo'ldingiz! End men sizga hikoyalar qoyishi bilan yuklab beraman.", parse_mode="Markdown")
+    else:
+        await callback.message.answer("Siz allaqachon obuna bo'lgansiz")
+
+
+@dp.callback_query(F.data.startswith("report_account_deletion"))
+async def notification_open_account(callback: CallbackQuery):
+    username = callback.data.split(":")[1]
+    user_id = callback.from_user.id
+
+    account_exist = await follow_exist(tg_id=user_id, account=username)
+
+    if not account_exist:
+        await follow_to_account(tg_id=user_id, account=username)
+        await callback.message.answer(f"Sizga `@{username}` account ochilganda albatta xabar beraman!", parse_mode="Markdown")
+    else:
+        await callback.message.answer("Siz allaqachon obuna bo'lgansiz!")
