@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, types
 from dotenv import load_dotenv
 
 from src.config import BOT_TOKEN
-from src.keyboards import admin_reply_keyboards
+from src.keyboards.reply_keyboard import admin_reply_keyboards
 
 load_dotenv()
 

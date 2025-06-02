@@ -3,4 +3,5 @@ stories_media/
 users_media/
 src/migrations/versions
 .idea
+__pycache__/
 .env

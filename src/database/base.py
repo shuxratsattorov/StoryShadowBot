@@ -1,13 +1,13 @@
-import datetime
 import os
 import sys
-from typing import Annotated
+from contextlib import asynccontextmanager
+from datetime import datetime
 
-from sqlalchemy import func
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
-from contextlib import asynccontextmanager
+from typing_extensions import Annotated
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from src.config import settings
@@ -20,14 +20,12 @@ async_engine = create_async_engine(
 async_session = async_sessionmaker(async_engine)
 
 inpk = Annotated[int, mapped_column(primary_key=True, index=True)]
-created_at = Annotated[datetime.datetime, mapped_column(server_default=func.now())]
-updated_at = Annotated[datetime.datetime, mapped_column(server_default=func.now(), onupdate=datetime.datetime.now())]
 
 
 class Base(DeclarativeBase):
     id: Mapped[inpk]
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True)
 
 
 @asynccontextmanager
