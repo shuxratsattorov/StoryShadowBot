@@ -26,8 +26,6 @@ async def add_or_replace_autofetch_account(tg_id: int, username: str):
             session.add(new_follow)
             await session.commit()
             return False
-        else:
-            return False
 
 
 async def remove_follow(tg_id: int, username: str):

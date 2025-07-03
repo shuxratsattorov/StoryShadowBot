@@ -1,35 +1,45 @@
 import os
 
 from instagrapi import Client
+# from instagrapi.device import Device
 from instagrapi.exceptions import LoginRequired
 
 cl = Client()
 
 
-SESSION_FILE = "src/login_session.json"
+SESSION_FILE = "src/sessions/login_session1.json"
 
 
 def login_to_instagram1(username, password):
     try:
+        cl.set_locale('en_US')
+        # cl.set_device(Device.generate())
+
         if not os.path.exists(SESSION_FILE):
-            cl.set_locale('en_US')
             cl.login(username, password)
             cl.dump_settings(SESSION_FILE)
-            return f"✅ Instagram login orqali muvaffaqiyatli ulandi va sessiya saqlandi!"
+            return "✅ Login OK"
         else:
             try:
-                cl.set_locale('en_US')
                 cl.load_settings(SESSION_FILE)
                 cl.login(username, password)
-                cl.user_info_by_username(username)
-                return f"✅ Instagram muvaffaqiyatli ulandi!"
+
+                try:
+                    cl.user_info_by_username(username)
+                    return "✅ Sessiya OK"
+                except LoginRequired:
+                    os.remove(SESSION_FILE)
+                    # cl.set_device(Device.generate())
+                    cl.login(username, password)
+                    cl.dump_settings(SESSION_FILE)
+                    return "♻️ Sessiya yangilandi"
             except LoginRequired:
                 os.remove(SESSION_FILE)
-                cl.set_locale('en_US')
+                # cl.set_device(Device.generate())
                 cl.login(username, password)
                 cl.dump_settings(SESSION_FILE)
-                return "✅ Sessiya eskirgani sababli, o'chirilib qayta yaratildi."
+                return "♻️ Sessiya buzilgan edi, qayta login qilindi"
             except Exception as e:
-                return f"❌ Umumiy xatolik: {e}"
+                return f"❌ Xatolik (sessiya): {e}"
     except Exception as e:
-        return f"❌ Umumiy xatolik: {e}"
+        return f"❌ Xatolik (asosiy): {e}"

@@ -9,19 +9,20 @@ from aiogram.types import Message
 from src.config import CHAT_ID
 from src.keyboards.inline_keyboard import delete_profile_button
 from src.keyboards.inline_keyboard import private_profile_button
-from src.keyboards.inline_keyboard import support_button, share_to_chat
+from src.keyboards.inline_keyboard import support_button, share_to_chat, select_language
 from src.loader import dp
 from src.orm.auto_fetch_stories import get_autofetch_accounts
 from src.orm.orm import add_user
 from src.utils.login_insta import cl
+from src.i18n.i18n_setup import _
 
 
 async def startup_answer(bot: Bot):
-    await bot.send_message(CHAT_ID, "Bot ishga tushdi! ✅")
+    await bot.send_message(CHAT_ID, _("Бот запущен и работает! ✅"))
 
 
 async def shutdown_answer(bot: Bot):
-    await bot.send_message(CHAT_ID, "Bot ishdan to'xtadi! ❌")
+    await bot.send_message(CHAT_ID, _("Бот перестал работать! ❌"))
 
 
 @dp.message(Command("start"))
@@ -33,39 +34,43 @@ async def start(message: Message, bot: Bot):
     )
 
     if user_added:
-        await bot.send_message(CHAT_ID, "✅ Yangi foydalanuvchi ro'yxatdan otdi!")
+        await bot.send_message(CHAT_ID, _("✅ Зарегистрирован новый пользователь!"))
 
-    await message.answer(f"Salom, men Insta Shadow - sizning shaxsiy Instagram kuzatuvchingiz.\n"
-                         f"Men sizga hikoyalari anonim ravishda kuzatishga yordam beraman.\n"
-                         f"Sizni qiziqtirgan kishining foydalanuvchi nomi yoki instagram havolasini yuboring.")
+    await message.answer(_("Привет, я Стори Шэдоув — твой персональный Instagram шпион.\n"
+                            "Я помогу тебе анонимно следить за чужими историями и публикациями.\n"
+                            "Отправь имя пользователя или ссылку на инстаграм того, кто тебя интересует."))
 
 
 @dp.message(Command("get"))
 async def get(message: Message):
-    await message.answer(f"Sizni qiziqtirgan shaxsning foydalanuvchi nomi yoki Instagram havolasini yuboring")
+    await message.answer(_("Отправь имя пользователя или ссылку на инстаграм того, кто тебя интересует."))
 
 
 @dp.message(Command("chats"))
 async def chat(message: Message):
-    await message.answer(f"Agar hikoyalar va postlarni avtomatik tarzda chatga joylashtirmoqchi bo‘lsangiz, "
-                         f"@storyshadowbot botini chatga qo‘shing.\n"
-                         f"Faqatgina chat egasi qaysi postlar e’lon qilinishini tanlashi mumkin.\n\n"
-                         f"Chatlar ro‘yxati:", reply_markup=share_to_chat())
+    await message.answer(_("Добавляй бота @storyshadowbot в свой чат, если хочешь автоматически публиковать в нем истории и публикации.\n"
+                           "Только владелец чата может выбрать, что в нем публиковать.\n\n"
+                           "Список твоих чатов, в которых состоит бот: пуст"), reply_markup=share_to_chat())
 
 
 @dp.message(Command("support"))
 async def support(message: Message):
-    await message.answer(f"Biz bilan bog'laning\n", reply_markup=support_button())
+    await message.answer(_("Связаться с нами:"), reply_markup=support_button())
 
 
 @dp.message(Command("help"))
 async def help_bot(message: Message):
-    await message.answer(f"Kerakli kamandalar:\n\n"
-                         f"/start — Qayta ishga tushirish\n"
-                         f"/get — Hikoyalarni ko'rish\n"
-                         f"/subscription — Obunalarni ko'rish\n"
-                         f"/chats — Chatlarni ko'rish\n"
-                         f"/support — Qo'llab qo'vatlash\n")
+    await message.answer(_(f"Необходимые команды:\n\n"
+                         f"/start — Перезапустить бота\n"
+                         f"/get — Просмотреть истории\n"
+                         f"/subscription — Просмотреть подписки\n"
+                         f"/chats — Просмотреть чаты\n"
+                         f"/support — Получить поддержку"))
+    
+
+@dp.message(Command("language"))
+async def language(message: Message):
+    await message.answer(_("Выберите язык:"), reply_markup=select_language())    
 
 
 @dp.message(Command("subscription"))
@@ -79,7 +84,7 @@ async def follow_list(message: Message, bot: Bot, save_path="media/users_media/"
         try:
             user_info = cl.user_info_by_username(username, use_cache=False)
             is_private = user_info.is_private
-            account_status = f"`@{username}` - Yopiq akkaunt." if is_private else f"`@{username}`"
+            account_status = _("`@{username}` - Закрытый аккаунт.").format(username=username) if is_private else f"`@{username}`"
             profile_button = private_profile_button(username) if is_private else delete_profile_button(username)
 
             os.makedirs(save_path, exist_ok=True)
@@ -103,6 +108,6 @@ async def follow_list(message: Message, bot: Bot, save_path="media/users_media/"
                 os.remove(file_name)
 
         except Exception as e:
-            await bot.send_message(CHAT_ID, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")
+            await bot.send_message(CHAT_ID, _("Раздел: Auto Fetch Stories\nUser: {tg_id}\nОшибка: {e}").format(tg_id=tg_id))
 
     await bot.delete_message(message.chat.id, wait_msg.message_id)

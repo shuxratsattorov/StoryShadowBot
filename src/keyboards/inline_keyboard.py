@@ -1,132 +1,117 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from src.i18n.i18n_setup import i18n
+
+__ = i18n.gettext
 
 
 def get_close_profile_button(username: str) -> InlineKeyboardMarkup:
-
-    keyboard = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🔔 Akkaunt o'chilishi haqida xabar berish", callback_data=f"report_account_deletion:{username}"
+                    text=__("🔔 Уведомить меня об открытии аккаунта"), callback_data=f"report_account_deletion:{username}"
                 )
             ]
         ]
     )
-    return keyboard
 
 
 def get_profile_button(username: str) -> InlineKeyboardMarkup:
-
-    keyboard = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="👀 Joriy hikoyalarni ko'rish", callback_data=f"view_current_stories:{username}"
+                    text=__("👀 Посмотреть текущие истории"), callback_data=f"view_current_stories:{username}"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text="💌 Hikoyalarga obuna bo'lish", callback_data=f"follow_to_account:{username}"
+                    text=__("💌 Подписаться на истории"), callback_data=f"follow_to_account:{username}"
                 )
             ]
         ]
     )
-    return keyboard
 
 
 def delete_profile_button(username: str) -> InlineKeyboardMarkup:
-
-    keyboard = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="👀 Joriy hikoyalarni ko'rish", callback_data=f"view_current_stories:{username}"
+                    text=__("👀 Посмотреть текущие истории"), callback_data=f"view_current_stories:{username}"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text="💌 Obunani olib tashlash", callback_data=f"delete_to_account:{username}"
+                    text=__("💌 Подписаться на истории"), callback_data=f"delete_to_account:{username}"
                 )
             ]
         ]
     )
-    return keyboard
 
 
 def private_profile_button(username: str) -> InlineKeyboardMarkup:
-
-    keyboard = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🔔 Akkaunt o'chilishi haqida xabar berish", callback_data=f"report_account_deletion:{username}"
+                    text=__("🔔 Уведомить меня об открытии аккаунта"), callback_data=f"report_account_deletion:{username}"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text="💌 Obunani olib tashlash", callback_data=f"delete_to_account:{username}"
+                    text=__("💌 Отписаться на истории"), callback_data=f"delete_to_account:{username}"
                 )
             ]
         ]
     )
-    return keyboard
 
 
 def share_to_chat() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
+    _ = i18n.gettext
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Botni guruhga taklif qiling", url="https://t.me/storyshadowbot?startgroup=true"
+                    text=__("Пригласить бота в чат"), url="https://t.me/storyshadowbot?startgroup=true"
                 )
             ]
         ]
     )
-    return keyboard
 
 
 def share_to_friends() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
+    _ = i18n.gettext
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Ulashish", url="https://t.me/share/url?url=https://t.me/storyninjabot?start=u5146109604&text="
+                    text=__("Поделиться"), url="https://t.me/share/url?url=https://t.me/storyninjabot?start=u5146109604&text="
                 )
             ]
         ]
     )
-    return keyboard
 
 
 def support_button() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
+    _ = i18n.gettext
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(
-                    text="Bizga yozing", url="https://t.me/yspvc"
-                )
+                InlineKeyboardButton(text=__("✍ Написать нам"), url="https://t.me/yspvc")
             ]
         ]
     )
-    return keyboard
 
 
-def select_language(username) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="uz", callback_data=f"uz:{username}"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="ru", callback_data=f"ru:{username}"
-                )
-            ]
+def select_language():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇿 O‘z", callback_data="lang_uz"),
+            InlineKeyboardButton(text="🇷🇺 Ру", callback_data="lang_ru"),
         ]
-    )
-    return keyboard
+    ])
+
 
 # async def show_admin_buttons(user_id: int):
 #     admin = load_chats()

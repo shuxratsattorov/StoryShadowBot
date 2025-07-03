@@ -13,6 +13,7 @@ class User(Base):
     tg_id: Mapped[int] = mapped_column(BigInteger, unique=True)
     fullname: Mapped[str] = mapped_column(nullable=True)
     username: Mapped[str] = mapped_column(nullable=True)
+    language: Mapped[str] = mapped_column(nullable=True)
     daily_download_date: Mapped[datetime] = mapped_column(Date, nullable=True)
     daily_download_count: Mapped[int] = mapped_column(Integer, default=0)
 

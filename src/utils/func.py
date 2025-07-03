@@ -9,7 +9,12 @@ from src.config import CHAT_ID
 from src.keyboards.inline_keyboard import get_profile_button
 from src.orm.auto_fetch_stories import get_autofetch_accounts, get_last_story_time, update_last_story_time
 from src.orm.monitor_acc_status import get_monitored_accounts, get_last_status_acc, update_last_status_acc
-from src.utils.login_scheduler import cl
+from src.utils.login_scheduler import cl, login_to_instagram1
+from src.config import (
+    INSTAGRAM_USERNAME_SCHEDULER,
+    INSTAGRAM_PASSWORD_SCHEDULER)
+from instagrapi.exceptions import LoginRequired
+
 
 
 async def check_account_status_changes(bot: Bot, tg_id: int, save_path="media/users_media/"):
@@ -58,12 +63,23 @@ async def send_stories_to_user(bot: Bot, tg_id: int, save_path="media/stories_me
 
     for username in accounts:
         try:
-            user_id = cl.user_id_from_username(username)
-            stories = cl.user_stories(user_id)
+            try:
+                user_id = cl.user_id_from_username(username)
+                stories = cl.user_stories(user_id)
+            except LoginRequired:
+                # Sessiya yaroqsiz, yangilaymiz va qayta urinib ko'ramiz
+                result = login_to_instagram1(INSTAGRAM_USERNAME_SCHEDULER, INSTAGRAM_PASSWORD_SCHEDULER)
+                await bot.send_message(tg_id, f"♻️ Sessiya yangilandi: {result}")
+
+                try:
+                    user_id = cl.user_id_from_username(username)
+                    stories = cl.user_stories(user_id)
+                except Exception as e:
+                    await bot.send_message(CHAT_ID, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nSessiyadan keyin ham xatolik: {e}")
+                    continue  # bu userni tashlab ketadi
 
             if stories:
                 os.makedirs(save_path, exist_ok=True)
-
                 last_story_time = await get_last_story_time(tg_id=tg_id, username=username)
 
                 for index, story in enumerate(stories):

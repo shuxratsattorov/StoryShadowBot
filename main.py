@@ -17,6 +17,7 @@ from src.schedulers.scheduler import start_scheduler
 from src.utils.login_insta import login_to_instagram
 from src.utils.login_scheduler import login_to_instagram1
 from src.utils.middlewere import Middleware
+from src.i18n.i18n_setup import DBI18nMiddleware, i18n
 from src.handlers.handlers import start
 from src.handlers.profile import send_profile
 from src.handlers.stories import send_stories
@@ -35,6 +36,9 @@ async def main():
     dp.startup.register(startup_answer)
     dp.shutdown.register(shutdown_answer)
 
+    dp.message.middleware(DBI18nMiddleware(i18n=i18n))
+    dp.callback_query.middleware(DBI18nMiddleware(i18n=i18n))
+
     dp.callback_query.middleware(Middleware())
 
     start_scheduler(bot, story_minutes=AUTO_REFRESH_STORIES, status_minutes=AUTO_REFRESH_STATUS_ACC)
@@ -42,6 +46,7 @@ async def main():
     await bot.set_my_commands([
         BotCommand(command="/start", description="Qayta ishga tushirish"),
         BotCommand(command="/get", description="Hikoyalarni ko'rish"),
+        BotCommand(command="/language", description="Tilni tanlang"),
         BotCommand(command="/subscription", description="Obunalarni ko'rish"),
         BotCommand(command="/chats", description="Chatlarni ko'rish"),
         BotCommand(command="/support", description="Qo'llab qo'vatlash"),

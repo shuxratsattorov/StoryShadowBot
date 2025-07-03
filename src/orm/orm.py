@@ -1,7 +1,7 @@
 import datetime
 from datetime import timedelta, date
 
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, update
 from sqlalchemy.future import select
 
 from src.config import DAILY_DOWNLOAD_COUNT
@@ -94,6 +94,21 @@ async def check_and_update_download_limit(tg_id: int) -> bool:
 
         await session.commit()
         return True
+
+
+async def get_user_locale(tg_id: int) -> str:
+    async with get_session() as session:
+        result = await session.execute(select(User.language).where(User.tg_id == tg_id))
+        return result.scalar_one_or_none()
+
+
+async def set_user_locale(tg_id: int, locale: str):
+    async with get_session() as session:
+        await session.execute(update(User)
+            .where(User.tg_id == tg_id)
+            .values(language=locale)
+        )
+        await session.commit()
 
 
 # async def main():

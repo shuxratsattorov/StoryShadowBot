@@ -1,12 +1,13 @@
 import os
 
 from instagrapi import Client
+# from instagrapi.types import Device
 from instagrapi.exceptions import LoginRequired
 
 cl = Client()
 
 
-SESSION_FILE = "src/session.json"
+SESSION_FILE = "src/sessions/session.json"
 
 
 def login_to_instagram(username, password):

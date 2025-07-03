@@ -34,3 +34,35 @@ def start_scheduler(bot: Bot, story_minutes: int, status_minutes: int):
     scheduler.add_job(monitor_account_status, IntervalTrigger(minutes=status_minutes))
 
     scheduler.start()
+
+# import asyncio
+# from datetime import datetime, timedelta
+# from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+# # Bu yerda containerlab o'rniga async test funksiyasi ishlatyapmiz
+# async def run_containerlab(name):
+#     print(f"{datetime.now().strftime('%H:%M:%S')} - {name} started")
+#     await asyncio.sleep(5)  # bu yerda containerlab chaqiruvi bo'lishi mumkin
+#     print(f"{datetime.now().strftime('%H:%M:%S')} - {name} finished")
+
+# async def main():
+#     scheduler = AsyncIOScheduler()
+
+#     now = datetime.now()
+
+#     # Uchta job, turli vaqtlar va biri parallel:
+#     scheduler.add_job(run_containerlab, args=["lab1"], trigger='interval', seconds=20, start_date=now + timedelta(seconds=2))
+#     scheduler.add_job(run_containerlab, args=["lab2"], trigger='interval', seconds=20, start_date=now + timedelta(seconds=4))
+#     scheduler.add_job(run_containerlab, args=["lab3"], trigger='interval', seconds=20, start_date=now + timedelta(seconds=4))  # lab2 bilan bir vaqtda
+
+#     scheduler.start()
+
+#     print(f"{now.strftime('%H:%M:%S')} - Scheduler started. Waiting for jobs...")
+
+#     # Event loopni to'xtatmaslik uchun
+#     while True:
+#         await asyncio.sleep(1)
+
+# # Faol ishga tushirish
+# if __name__ == "__main__":
+#     asyncio.run(main())
