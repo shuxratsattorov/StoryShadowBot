@@ -4,6 +4,7 @@ users_media/
 src/migrations/versions
 src/i18n/locales/ru/LC_MESSAGES/messages.mo
 src/sessions/*.json
+src/bot/handlers/test.py
 .idea
 __pycache__/
 .env

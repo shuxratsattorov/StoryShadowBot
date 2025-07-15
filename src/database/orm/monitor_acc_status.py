@@ -2,7 +2,7 @@ from sqlalchemy import and_, asc, update
 from sqlalchemy.future import select
 
 from src.database.base import get_session
-from src.database.models import MonitorAccountStatus
+from database.models.models import MonitorAccountStatus
 
 
 async def add_or_replace_monitored_account(tg_id: int, username: str):

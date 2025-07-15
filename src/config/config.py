@@ -7,11 +7,28 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
+    #   < --- Postgres --- >
     DB_HOST: str = "localhost"
     DB_PORT: str = "5432"
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "123"
     DB_NAME: str = "aiogram"
+
+    #   < --- Redis --- >
+    REDIS_BROKER_URL: str = "redis://localhost:6379/0"
+    REDIS_BACKEND_URL: str = "redis://localhost:6379/1"
+
+    #   < --- Telegram Bot --- >
+    BOT_TOKEN: str = ""
+    CHAT_ID: int = ""
+
+    #   < --- Config --- >
+    DAILY_DOWNLOAD_COUNT: int = ""
+    FOLLOW_COUNT: int = ""
+
+    #   < --- Config --- >
+    AUTO_REFRESH_STORIES: int = ""
+    AUTO_REFRESH_STATUS_ACC: int = ""
 
     @property
     def DATABASE_URL_asyncpg(self):
@@ -27,13 +44,3 @@ INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
 
 INSTAGRAM_USERNAME_SCHEDULER = os.getenv("INSTAGRAM_USERNAME_SCHEDULER")
 INSTAGRAM_PASSWORD_SCHEDULER = os.getenv("INSTAGRAM_PASSWORD_SCHEDULER")
-
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
-CHAT_ID = os.environ.get('CHAT_ID')
-
-AUTO_REFRESH_STORIES = int(os.environ.get('AUTO_REFRESH_STORIES'))
-AUTO_REFRESH_STATUS_ACC = int(os.environ.get('AUTO_REFRESH_STATUS_ACC'))
-
-DAILY_DOWNLOAD_COUNT = int(os.environ.get('DAILY_DOWNLOAD_COUNT'))
-
-FOLLOW_COUNT = int(os.environ.get('FOLLOW_COUNT'))

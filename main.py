@@ -3,7 +3,7 @@ import logging
 
 from aiogram.types import BotCommand
 
-from src.config import (
+from src.config.config import (
     INSTAGRAM_USERNAME,
     INSTAGRAM_PASSWORD,
     INSTAGRAM_USERNAME_SCHEDULER,
@@ -11,17 +11,17 @@ from src.config import (
     AUTO_REFRESH_STORIES,
     AUTO_REFRESH_STATUS_ACC
 )
-from src.handlers.handlers import startup_answer, shutdown_answer
-from src.loader import bot, dp
-from src.schedulers.scheduler import start_scheduler
+from src.bot.handlers.handlers import startup_answer, shutdown_answer
+from src.config.loader import bot, dp
+from tasks.scheduler import start_scheduler
 from src.utils.login_insta import login_to_instagram
 from src.utils.login_scheduler import login_to_instagram1
 from src.utils.middlewere import Middleware
 from src.i18n.i18n_setup import DBI18nMiddleware, i18n
-from src.handlers.handlers import start
-from src.handlers.profile import send_profile
-from src.handlers.stories import send_stories
-from src.handlers.auto_fetch import follow_list
+from src.bot.handlers.handlers import start
+from src.bot.handlers.profile import send_profile
+from src.bot.handlers.stories import send_stories
+from src.bot.handlers.auto_fetch import follow_list
 
 
 async def main():

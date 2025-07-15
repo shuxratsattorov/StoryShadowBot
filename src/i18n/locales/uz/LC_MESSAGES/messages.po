@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-04 01:50+0500\n"
+"POT-Creation-Date: 2025-07-04 11:43+0500\n"
 "PO-Revision-Date: 2025-07-03 15:29+0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uz\n"
@@ -18,19 +18,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/handlers/handlers.py:21
-msgid "Бот запущен и работает! ✅"
-msgstr "Bot ishga tushdi! ✅"
+#: src/handlers/handlers.py:20
+msgid "Бот успешно запущен! ✅"
+msgstr ""
 
-#: src/handlers/handlers.py:25
-msgid "Бот перестал работать! ❌"
-msgstr "Bot ishdan to'xtadi! ❌"
+#: src/handlers/handlers.py:24
+msgid "Бот остановлен.! ❌"
+msgstr ""
 
-#: src/handlers/handlers.py:37
-msgid "✅ Зарегистрирован новый пользователь!"
+#: src/handlers/handlers.py:36
+#, fuzzy
+msgid "Зарегистрирован новый пользователь! ✅"
 msgstr "✅ Yangi foydalanuvchi ro'yxatdan otdi!"
 
-#: src/handlers/handlers.py:39
+#: src/handlers/handlers.py:38
 msgid ""
 "Привет, я Стори Шэдоув — твой персональный Instagram шпион.\n"
 "Я помогу тебе анонимно следить за чужими историями и публикациями.\n"
@@ -42,7 +43,7 @@ msgstr ""
 "Sizni qiziqtirgan kishining foydalanuvchi nomi yoki instagram havolasini "
 "yuboring."
 
-#: src/handlers/handlers.py:46
+#: src/handlers/handlers.py:45
 msgid ""
 "Отправь имя пользователя или ссылку на инстаграм того, кто тебя "
 "интересует."
@@ -50,7 +51,7 @@ msgstr ""
 "Sizni qiziqtirgan shaxsning foydalanuvchi nomi yoki Instagram havolasini "
 "yuboring."
 
-#: src/handlers/handlers.py:51
+#: src/handlers/handlers.py:50
 msgid ""
 "Добавляй бота @storyshadowbot в свой чат, если хочешь автоматически "
 "публиковать в нем истории и публикации.\n"
@@ -59,11 +60,11 @@ msgid ""
 "Список твоих чатов, в которых состоит бот: пуст"
 msgstr ""
 
-#: src/handlers/handlers.py:58
+#: src/handlers/handlers.py:57
 msgid "Связаться с нами:"
 msgstr ""
 
-#: src/handlers/handlers.py:63
+#: src/handlers/handlers.py:62
 msgid ""
 "Необходимые команды:\n"
 "\n"
@@ -74,16 +75,16 @@ msgid ""
 "/support — Получить поддержку"
 msgstr ""
 
-#: src/handlers/handlers.py:73
+#: src/handlers/handlers.py:72
 msgid "Выберите язык:"
 msgstr ""
 
-#: src/handlers/handlers.py:87
+#: src/handlers/handlers.py:86
 #, python-brace-format
 msgid "`@{username}` - Закрытый аккаунт."
 msgstr ""
 
-#: src/handlers/handlers.py:111
+#: src/handlers/handlers.py:110
 #, python-brace-format
 msgid ""
 "Раздел: Auto Fetch Stories\n"
@@ -91,62 +92,66 @@ msgid ""
 "Ошибка: {e}"
 msgstr ""
 
-#: src/handlers/stories.py:26
+#: src/handlers/stories.py:25
 msgid "Язык успешно изменён."
 msgstr "Til muvaffaqiyatli o‘zbek tiliga o‘zgartirildi."
 
-#: src/handlers/stories.py:40
+#: src/handlers/stories.py:39
 #, python-brace-format
 msgid "У `@{username}` нет текущих историй."
 msgstr ""
 
-#: src/handlers/stories.py:45
+#: src/handlers/stories.py:44
 #, python-brace-format
 msgid "Загружаем {count} сторис `@{username}`"
 msgstr ""
 
-#: src/handlers/stories.py:71
+#: src/handlers/stories.py:70
 #, python-brace-format
 msgid ""
 "`@{username}` видео в истории ({index}/{total})\n"
 "\n"
 msgstr ""
 
-#: src/handlers/stories.py:75
+#: src/handlers/stories.py:74
 #, python-brace-format
 msgid ""
 "Упоминания: `{mentions}`\n"
 "\n"
 msgstr ""
 
-#: src/handlers/stories.py:88
+#: src/handlers/stories.py:87
 msgid "Ошибка при загрузке."
 msgstr ""
 
-#: src/handlers/stories.py:91
+#: src/handlers/stories.py:90
 #, python-brace-format
 msgid "❌ {index}-ошибка загрузки истории."
 msgstr ""
 
-#: src/handlers/stories.py:92
+#: src/handlers/stories.py:91
 #, python-brace-format
 msgid "❌ {index}-ошибка загрузки истории: {error}"
 msgstr ""
 
-#: src/handlers/stories.py:96
+#: src/handlers/stories.py:94
 msgid "Нравится бот? Пожалуйста, расскажи о нем друзьям"
 msgstr ""
 
-#: src/handlers/stories.py:102
+#: src/handlers/stories.py:98
+msgid "❌ Произошла ошибка."
+msgstr ""
+
+#: src/handlers/stories.py:99
 #, python-brace-format
 msgid "❌ Произошла ошибка: {error}"
 msgstr ""
 
-#: src/handlers/stories.py:113
+#: src/handlers/stories.py:110
 msgid "Теперь я буду загружать истории, как только они будут опубликованы."
 msgstr ""
 
-#: src/handlers/stories.py:116
+#: src/handlers/stories.py:113
 msgid ""
 "Вы достигли лимита подписок на истории,Пожалуйста, проверьте **подписки**"
 " /subscription"
@@ -175,4 +180,10 @@ msgstr ""
 
 #~ msgid "✍ Написать нам"
 #~ msgstr "✍ Bizga yozing"
+
+#~ msgid "Бот запущен и работает! ✅"
+#~ msgstr "Bot ishga tushdi! ✅"
+
+#~ msgid "Бот перестал работать! ❌"
+#~ msgstr "Bot ishdan to'xtadi! ❌"
 

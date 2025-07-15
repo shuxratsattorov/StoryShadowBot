@@ -5,12 +5,12 @@ import requests
 from aiogram import Bot
 from aiogram.types import FSInputFile
 
-from src.config import CHAT_ID
-from src.keyboards.inline_keyboard import get_profile_button
-from src.orm.auto_fetch_stories import get_autofetch_accounts, get_last_story_time, update_last_story_time
-from src.orm.monitor_acc_status import get_monitored_accounts, get_last_status_acc, update_last_status_acc
+from src.config.config import CHAT_ID
+from src.bot.keyboards.inline_keyboard import get_profile_button
+from src.database.orm.auto_fetch_stories import get_autofetch_accounts, get_last_story_time, update_last_story_time
+from src.database.orm.monitor_acc_status import get_monitored_accounts, get_last_status_acc, update_last_status_acc
 from src.utils.login_scheduler import cl, login_to_instagram1
-from src.config import (
+from src.config.config import (
     INSTAGRAM_USERNAME_SCHEDULER,
     INSTAGRAM_PASSWORD_SCHEDULER)
 from instagrapi.exceptions import LoginRequired

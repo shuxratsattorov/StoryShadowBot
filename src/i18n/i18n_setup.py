@@ -1,12 +1,12 @@
 from aiogram.utils.i18n import I18n
 from typing import Optional, Dict, Any
 from aiogram.types import TelegramObject
-from aiogram.utils.i18n.middleware import SimpleI18nMiddleware
+from aiogram.utils.i18n.middleware import I18nMiddleware
 
-from src.orm.orm import get_user_locale, set_user_locale
+from src.database.orm.orm import get_user_locale
 
 
-class DBI18nMiddleware(SimpleI18nMiddleware):
+class DBI18nMiddleware(I18nMiddleware):
 
     def __init__(
         self,
@@ -18,20 +18,18 @@ class DBI18nMiddleware(SimpleI18nMiddleware):
 
     async def get_locale(self, event: TelegramObject, data: Dict[str, Any]) -> str:
         user = event.from_user
-        if not user:
-            return await super().get_locale(event, data)
 
-        tg_id = user.id
-        locale = await get_user_locale(tg_id)
+        locale = await get_user_locale(user.id)
+        if locale:
+            return locale
 
-        if not locale:
-            locale = await super().get_locale(event, data)
-            await set_user_locale(tg_id, locale)
+        if user.language_code:
+            return user.language_code
 
-        return locale
+        return self.i18n.default_locale
 
 
-i18n = I18n(path="src/i18n/locales", domain="messages")
+i18n = I18n(path="src/i18n/locales", default_locale="ru", domain="messages")
 
 _ = i18n.gettext
 __ = i18n.lazy_gettext

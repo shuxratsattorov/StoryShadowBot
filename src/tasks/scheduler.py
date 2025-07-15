@@ -4,7 +4,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy import select
 
 from src.database.base import async_session
-from src.database.models import AutoFetchStories, MonitorAccountStatus
+from src.database.models.models import AutoFetchStories, MonitorAccountStatus
 from src.utils.func import send_stories_to_user, check_account_status_changes
 
 scheduler = AsyncIOScheduler()

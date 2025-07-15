@@ -1,28 +1,27 @@
 import os
-
 import requests
 from aiogram import Bot
+from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.types import FSInputFile
-from aiogram.types import Message
 
-from src.config import CHAT_ID
-from src.keyboards.inline_keyboard import delete_profile_button
-from src.keyboards.inline_keyboard import private_profile_button
-from src.keyboards.inline_keyboard import support_button, share_to_chat, select_language
-from src.loader import dp
-from src.orm.auto_fetch_stories import get_autofetch_accounts
-from src.orm.orm import add_user
-from src.utils.login_insta import cl
+from src.config.loader import dp
+from src.config.config import CHAT_ID
+from src.database.orm.orm import add_user
 from src.i18n.i18n_setup import _
+from src.utils.login_insta import cl
+from src.database.orm.auto_fetch_stories import get_autofetch_accounts
+from src.bot.keyboards.inline_keyboard import delete_profile_button
+from src.bot.keyboards.inline_keyboard import private_profile_button
+from src.bot.keyboards.inline_keyboard import support_button, share_to_chat, select_language
 
 
 async def startup_answer(bot: Bot):
-    await bot.send_message(CHAT_ID, _("Бот запущен и работает! ✅"))
+    await bot.send_message(CHAT_ID, _("Бот успешно запущен! ✅"))
 
 
 async def shutdown_answer(bot: Bot):
-    await bot.send_message(CHAT_ID, _("Бот перестал работать! ❌"))
+    await bot.send_message(CHAT_ID, _("Бот остановлен.! ❌"))
 
 
 @dp.message(Command("start"))
@@ -34,7 +33,7 @@ async def start(message: Message, bot: Bot):
     )
 
     if user_added:
-        await bot.send_message(CHAT_ID, _("✅ Зарегистрирован новый пользователь!"))
+        await bot.send_message(CHAT_ID, _("Зарегистрирован новый пользователь! ✅"))
 
     await message.answer(_("Привет, я Стори Шэдоув — твой персональный Instagram шпион.\n"
                             "Я помогу тебе анонимно следить за чужими историями и публикациями.\n"
@@ -108,6 +107,6 @@ async def follow_list(message: Message, bot: Bot, save_path="media/users_media/"
                 os.remove(file_name)
 
         except Exception as e:
-            await bot.send_message(CHAT_ID, _("Раздел: Auto Fetch Stories\nUser: {tg_id}\nОшибка: {e}").format(tg_id=tg_id))
+            await bot.send_message(CHAT_ID, _("Раздел: Auto Fetch Stories\nUser: {tg_id}\nОшибка: {e}").format(tg_id=tg_id, e=e))
 
     await bot.delete_message(message.chat.id, wait_msg.message_id)

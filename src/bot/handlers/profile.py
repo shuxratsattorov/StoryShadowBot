@@ -1,21 +1,19 @@
 import os
 import re
 import string
-
 import requests
 from aiogram import Bot, F
 from aiogram.types import FSInputFile
-from aiogram.types import Message, CallbackQuery
 from instagrapi.exceptions import UserNotFound
+from aiogram.types import Message, CallbackQuery
 
-from src.config import CHAT_ID
-from src.keyboards.inline_keyboard import get_profile_button, get_close_profile_button, delete_profile_button
-from src.loader import dp
-from src.orm.auto_fetch_stories import add_or_replace_autofetch_account
-from src.orm.monitor_acc_status import is_account_monitored, \
-    add_or_replace_monitored_account
-from src.orm.orm import save_search_to_db
+from src.config.loader import dp
+from src.config.config import CHAT_ID
 from src.utils.login_insta import cl
+from src.database.orm.orm import save_search_to_db
+from src.database.orm.auto_fetch_stories import add_or_replace_autofetch_account
+from src.database.orm.monitor_acc_status import is_account_monitored, add_or_replace_monitored_account
+from src.bot.keyboards.inline_keyboard import get_profile_button, get_close_profile_button, delete_profile_button
 
 
 @dp.message()

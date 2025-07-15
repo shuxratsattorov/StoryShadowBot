@@ -4,9 +4,9 @@ from datetime import timedelta, date
 from sqlalchemy import and_, func, update
 from sqlalchemy.future import select
 
-from src.config import DAILY_DOWNLOAD_COUNT
+from src.config.config import DAILY_DOWNLOAD_COUNT
 from src.database.base import get_session
-from src.database.models import User, Search
+from src.database.models.models import User, Search
 
 
 async def add_user(tg_id: int, fullname: str, username: str):

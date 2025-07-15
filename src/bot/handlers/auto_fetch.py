@@ -1,19 +1,18 @@
 import os
-
 import requests
 from aiogram import Bot, F
 from aiogram.filters import Command
 from aiogram.types import FSInputFile
 from aiogram.types import Message, CallbackQuery
 
-from src.config import CHAT_ID
-from src.keyboards.inline_keyboard import delete_profile_button
-from src.keyboards.inline_keyboard import private_profile_button
-from src.loader import dp
-from src.orm.auto_fetch_stories import add_or_replace_autofetch_account
-from src.orm.auto_fetch_stories import get_autofetch_accounts
-from src.orm.auto_fetch_stories import remove_follow
+from src.config.loader import dp
+from src.config.config import CHAT_ID
 from src.utils.login_insta import cl
+from src.database.orm.auto_fetch_stories import remove_follow
+from src.database.orm.auto_fetch_stories import get_autofetch_accounts
+from src.bot.keyboards.inline_keyboard import delete_profile_button
+from src.bot.keyboards.inline_keyboard import private_profile_button
+from src.database.orm.auto_fetch_stories import add_or_replace_autofetch_account
 
 
 @dp.callback_query(F.data.startswith("follow_to_account"))

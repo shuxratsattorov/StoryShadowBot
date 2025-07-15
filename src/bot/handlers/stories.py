@@ -1,18 +1,17 @@
 import os
-from datetime import datetime, timedelta
-
 import requests
 from aiogram import F
-from aiogram.types import CallbackQuery
 from aiogram.types import FSInputFile
+from aiogram.types import CallbackQuery
+from datetime import datetime, timedelta
 
-from src.config import CHAT_ID
-from src.keyboards.inline_keyboard import share_to_friends
-from src.loader import dp
-from src.orm.auto_fetch_stories import add_or_replace_autofetch_account, remove_follow
+from src.config.loader import dp
+from src.config.config import CHAT_ID
+from src.i18n.i18n_setup import _
 from src.utils.login_insta import cl
-from src.i18n.i18n_setup import _, i18n
 from src.orm.orm import set_user_locale
+from src.keyboards.inline_keyboard import share_to_friends
+from src.orm.auto_fetch_stories import add_or_replace_autofetch_account, remove_follow
 
 
 @dp.callback_query(lambda c: c.data.startswith("lang_"))
@@ -20,11 +19,7 @@ async def set_language(callback: CallbackQuery):
     lang_code = callback.data.split("_")[1]
     
     await set_user_locale(callback.from_user.id, lang_code)
-    
-    i18n.current_locale = lang_code
-
     await callback.message.edit_text(_("Язык успешно изменён."))
-    await callback.answer()
 
 
 @dp.callback_query(F.data.startswith("view_current_stories"))
@@ -89,16 +84,14 @@ async def send_stories(callback: CallbackQuery):
 
             except Exception as e:
                 await callback.message.answer(_("❌ {index}-ошибка загрузки истории.").format(index=index + 1))
-                await callback.bot.send_message(CHAT_ID, _("❌ {index}-ошибка загрузки истории: {error}").format(
-                    index=index + 1, error=e))
+                await callback.bot.send_message(CHAT_ID, _("❌ {index}-ошибка загрузки истории: {error}").format(index=index + 1, e=e))
 
         await callback.message.answer(
-            _("Нравится бот? Пожалуйста, расскажи о нем друзьям"),
-            reply_markup=share_to_friends()
+            _("Нравится бот? Пожалуйста, расскажи о нем друзьям"), reply_markup=share_to_friends()
         )
 
     except Exception as e:
-        await callback.message.answer(__("❌ Произошла ошибка."))
+        await callback.message.answer(_("❌ Произошла ошибка."))
         await callback.bot.send_message(CHAT_ID, _("❌ Произошла ошибка: {error}").format(error=e))
 
 

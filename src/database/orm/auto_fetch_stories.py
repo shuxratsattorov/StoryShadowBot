@@ -3,9 +3,10 @@ import datetime
 from sqlalchemy import and_, update
 from sqlalchemy.future import select
 
-from src.config import FOLLOW_COUNT
+from src.config.config import FOLLOW_COUNT
 from src.database.base import get_session
-from src.database.models import AutoFetchStories
+from src.database.models.models import AutoFetchStories
+from src.tasks.scheduler import start_scheduler
 
 
 async def add_or_replace_autofetch_account(tg_id: int, username: str):
