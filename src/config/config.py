@@ -1,46 +1,45 @@
-import os
-
-from dotenv import load_dotenv
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-load_dotenv()
 
 
 class Settings(BaseSettings):
     #   < --- Postgres --- >
-    DB_HOST: str = "localhost"
-    DB_PORT: str = "5432"
-    DB_USER: str = "postgres"
-    DB_PASSWORD: str = "123"
-    DB_NAME: str = "aiogram"
+    DB_HOST: str
+    DB_PORT: str
+    DB_USER: str
+    DB_PASS: str
+    DB_NAME: str
 
     #   < --- Redis --- >
-    REDIS_BROKER_URL: str = "redis://localhost:6379/0"
-    REDIS_BACKEND_URL: str = "redis://localhost:6379/1"
+    REDIS_BROKER_URL: str
+    REDIS_BACKEND_URL: str
 
     #   < --- Telegram Bot --- >
-    BOT_TOKEN: str = ""
-    CHAT_ID: int = ""
+    BOT_TOKEN: str
+    CHAT_ID: int
 
     #   < --- Config --- >
-    DAILY_DOWNLOAD_COUNT: int = ""
-    FOLLOW_COUNT: int = ""
+    DAILY_DOWNLOAD_COUNT: int
+    FOLLOW_COUNT: int
 
     #   < --- Config --- >
-    AUTO_REFRESH_STORIES: int = ""
-    AUTO_REFRESH_STATUS_ACC: int = ""
+    AUTO_REFRESH_STORIES: int
+    AUTO_REFRESH_STATUS_ACC: int
+
+    INSTAGRAM_USERNAME: str
+    INSTAGRAM_PASSWORD: str
+
+    INSTAGRAM_USERNAME_SCHEDULER: str
+    INSTAGRAM_PASSWORD_SCHEDULER: str
 
     @property
     def DATABASE_URL_asyncpg(self):
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-    model_config = SettingsConfigDict(env_file="../.env", extra="allow")
+    model_config = SettingsConfigDict(
+        env_file=(Path(__file__).resolve().parents[2] / ".env"), 
+        extra="allow"
+        )
 
 
 settings = Settings()
-
-INSTAGRAM_USERNAME = os.getenv("INSTAGRAM_USERNAME")
-INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
-
-INSTAGRAM_USERNAME_SCHEDULER = os.getenv("INSTAGRAM_USERNAME_SCHEDULER")
-INSTAGRAM_PASSWORD_SCHEDULER = os.getenv("INSTAGRAM_PASSWORD_SCHEDULER")

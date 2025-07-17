@@ -1,20 +1,28 @@
 import os
-from datetime import datetime
-
 import requests
 from aiogram import Bot
+from datetime import datetime
 from aiogram.types import FSInputFile
 
-from src.config.config import CHAT_ID
-from src.bot.keyboards.inline_keyboard import get_profile_button
-from src.database.orm.auto_fetch_stories import get_autofetch_accounts, get_last_story_time, update_last_story_time
-from src.database.orm.monitor_acc_status import get_monitored_accounts, get_last_status_acc, update_last_status_acc
-from src.utils.login_scheduler import cl, login_to_instagram1
-from src.config.config import (
-    INSTAGRAM_USERNAME_SCHEDULER,
-    INSTAGRAM_PASSWORD_SCHEDULER)
+from src.config.config import settings
 from instagrapi.exceptions import LoginRequired
+from src.utils.login_scheduler import cl, login_to_instagram1
+from src.bot.keyboards.inline_keyboard import get_profile_button
+from src.database.orm.auto_fetch_stories import (
+    get_autofetch_accounts, 
+    get_last_story_time, 
+    update_last_story_time
+    )
+from src.database.orm.monitor_acc_status import (
+    get_monitored_accounts, 
+    get_last_status_acc, 
+    update_last_status_acc
+    )
 
+
+chat_id = settings.CHAT_ID
+username = settings.INSTAGRAM_USERNAME_SCHEDULER
+password = settings.INSTAGRAM_PASSWORD_SCHEDULER
 
 
 async def check_account_status_changes(bot: Bot, tg_id: int, save_path="media/users_media/"):
@@ -55,7 +63,7 @@ async def check_account_status_changes(bot: Bot, tg_id: int, save_path="media/us
                 await update_last_status_acc(username, current_status)
 
         except Exception as e:
-            await bot.send_message(CHAT_ID, f"Bo'lim: Monitor Account Status\nUser: {tg_id}\nXatolik: {e}")
+            await bot.send_message(chat_id, f"Bo'lim: Monitor Account Status\nUser: {tg_id}\nXatolik: {e}")
 
 
 async def send_stories_to_user(bot: Bot, tg_id: int, save_path="media/stories_media/"):
@@ -68,14 +76,14 @@ async def send_stories_to_user(bot: Bot, tg_id: int, save_path="media/stories_me
                 stories = cl.user_stories(user_id)
             except LoginRequired:
                 # Sessiya yaroqsiz, yangilaymiz va qayta urinib ko'ramiz
-                result = login_to_instagram1(INSTAGRAM_USERNAME_SCHEDULER, INSTAGRAM_PASSWORD_SCHEDULER)
+                result = login_to_instagram1(username, password)
                 await bot.send_message(tg_id, f"♻️ Sessiya yangilandi: {result}")
 
                 try:
                     user_id = cl.user_id_from_username(username)
                     stories = cl.user_stories(user_id)
                 except Exception as e:
-                    await bot.send_message(CHAT_ID, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nSessiyadan keyin ham xatolik: {e}")
+                    await bot.send_message(chat_id, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nSessiyadan keyin ham xatolik: {e}")
                     continue  # bu userni tashlab ketadi
 
             if stories:
@@ -120,7 +128,7 @@ async def send_stories_to_user(bot: Bot, tg_id: int, save_path="media/stories_me
                             await update_last_story_time(tg_id=tg_id, username=username, new_time=time)
 
                     except Exception as e:
-                        await bot.send_message(CHAT_ID, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")
+                        await bot.send_message(chat_id, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")
 
         except Exception as e:
-            await bot.send_message(CHAT_ID, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")
+            await bot.send_message(chat_id, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")

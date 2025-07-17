@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import FSInputFile
 
 from src.config.loader import dp
-from src.config.config import CHAT_ID
+from src.config.config import settings
 from src.database.orm.orm import add_user
 from src.i18n.i18n_setup import _
 from src.utils.login_insta import cl
@@ -15,13 +15,15 @@ from src.bot.keyboards.inline_keyboard import delete_profile_button
 from src.bot.keyboards.inline_keyboard import private_profile_button
 from src.bot.keyboards.inline_keyboard import support_button, share_to_chat, select_language
 
+chat_id = settings.CHAT_ID
+
 
 async def startup_answer(bot: Bot):
-    await bot.send_message(CHAT_ID, _("Бот успешно запущен! ✅"))
+    await bot.send_message(chat_id, _("Бот успешно запущен! ✅"))
 
 
 async def shutdown_answer(bot: Bot):
-    await bot.send_message(CHAT_ID, _("Бот остановлен.! ❌"))
+    await bot.send_message(chat_id, _("Бот остановлен.! ❌"))
 
 
 @dp.message(Command("start"))
@@ -33,7 +35,7 @@ async def start(message: Message, bot: Bot):
     )
 
     if user_added:
-        await bot.send_message(CHAT_ID, _("Зарегистрирован новый пользователь! ✅"))
+        await bot.send_message(chat_id, _("Зарегистрирован новый пользователь! ✅"))
 
     await message.answer(_("Привет, я Стори Шэдоув — твой персональный Instagram шпион.\n"
                             "Я помогу тебе анонимно следить за чужими историями и публикациями.\n"
@@ -107,6 +109,6 @@ async def follow_list(message: Message, bot: Bot, save_path="media/users_media/"
                 os.remove(file_name)
 
         except Exception as e:
-            await bot.send_message(CHAT_ID, _("Раздел: Auto Fetch Stories\nUser: {tg_id}\nОшибка: {e}").format(tg_id=tg_id, e=e))
+            await bot.send_message(chat_id, _("Раздел: Auto Fetch Stories\nUser: {tg_id}\nОшибка: {e}").format(tg_id=tg_id, e=e))
 
     await bot.delete_message(message.chat.id, wait_msg.message_id)

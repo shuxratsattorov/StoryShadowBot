@@ -4,9 +4,11 @@ from datetime import timedelta, date
 from sqlalchemy import and_, func, update
 from sqlalchemy.future import select
 
-from src.config.config import DAILY_DOWNLOAD_COUNT
+from src.config.config import settings
 from src.database.base import get_session
 from src.database.models.models import User, Search
+
+daily_donwnload_count = settings.DAILY_DOWNLOAD_COUNT
 
 
 async def add_user(tg_id: int, fullname: str, username: str):
@@ -85,7 +87,7 @@ async def check_and_update_download_limit(tg_id: int) -> bool:
             return False
 
         if user.daily_download_date == today:
-            if user.daily_download_count >= DAILY_DOWNLOAD_COUNT:
+            if user.daily_download_count >= daily_donwnload_count:
                 return False
             user.daily_download_count += 1
         else:

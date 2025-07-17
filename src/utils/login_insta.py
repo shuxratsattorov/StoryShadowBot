@@ -15,13 +15,13 @@ async def login_to_instagram(username: str, password: str) -> str:
     try:
         if session:
             cl.load_settings(pickle.loads(session))
-            cl.login(username, password)
-            cl.user_info_by_username(username)
-            return "✅ Instagramga mavjud sessiya orqali muvaffaqiyatli login qilindi."
+            cl.init()
+            cl.account_info()
+            return "✅ Sessiya orqali muvaffaqiyatli login qilindi."
 
         cl.login(username, password)
         await create_or_update_session(username, pickle.dumps(cl.get_settings()))
-        return "✅ Yangi login qilindi va sessiya PostgreSQL'ga saqlandi."
+        return "✅ Yangi login qilindi va sessiya saqlandi."
 
     except LoginRequired:
         cl.login(username, password)

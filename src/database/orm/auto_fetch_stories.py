@@ -3,10 +3,12 @@ import datetime
 from sqlalchemy import and_, update
 from sqlalchemy.future import select
 
-from src.config.config import FOLLOW_COUNT
+from src.config.config import settings
 from src.database.base import get_session
 from src.database.models.models import AutoFetchStories
 from src.tasks.scheduler import start_scheduler
+
+follow_count = settings.FOLLOW_COUNT
 
 
 async def add_or_replace_autofetch_account(tg_id: int, username: str):
@@ -19,7 +21,7 @@ async def add_or_replace_autofetch_account(tg_id: int, username: str):
         if any(f.account == username for f in follows):
             return True
 
-        if len(follows) < FOLLOW_COUNT:
+        if len(follows) < follow_count:
             new_follow = AutoFetchStories(
                 user_id=tg_id,
                 account=username
