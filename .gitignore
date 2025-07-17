@@ -1,7 +1,7 @@
 venv/
 stories_media/
 users_media/
-src/migrations/versions
+src/database/migrations/versions/*.py
 src/i18n/locales/ru/LC_MESSAGES/messages.mo
 src/sessions/*.json
 src/bot/handlers/test.py
