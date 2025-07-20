@@ -3,9 +3,9 @@ import requests
 from aiogram import Bot
 from datetime import datetime
 from aiogram.types import FSInputFile
+from instagrapi.exceptions import LoginRequired
 
 from src.config.config import settings
-from instagrapi.exceptions import LoginRequired
 from src.utils.login_scheduler import cl, login_to_instagram1
 from src.bot.keyboards.inline_keyboard import get_profile_button
 from src.database.orm.auto_fetch_stories import (

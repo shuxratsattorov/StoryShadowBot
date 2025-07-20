@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from src.config.config import settings
 from src.database.base import get_session
 from src.database.models.models import AutoFetchStories
-from src.tasks.scheduler import start_scheduler
+# from src.tasks.scheduler import start_scheduler
 
 follow_count = settings.FOLLOW_COUNT
 

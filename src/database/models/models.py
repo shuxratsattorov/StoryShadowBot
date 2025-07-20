@@ -1,6 +1,6 @@
 from datetime import datetime
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import ForeignKey, BigInteger, String, Integer, Boolean, LargeBinary, Date
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey, BigInteger, String, Integer, Boolean, LargeBinary, Date, DateTime
 
 from src.database.base import Base
 
@@ -43,16 +43,35 @@ class MonitorAccountStatus(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.tg_id", onupdate="CASCADE"))
 
 
+class InstagramAccount(Base):
+    __tablename__ = "instagram_accounts"
+
+    username: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_blocked: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    sessions: Mapped[list["InstagramSession"]] = relationship("InstagramSession", back_populates="account")
+
+
 class InstagramSession(Base):
     __tablename__ = "instagram_sessions"
 
-    account: Mapped[str] = mapped_column(String)
-    session: Mapped[bytes] = mapped_column(LargeBinary)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    session_data: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    proxy: Mapped[str] = mapped_column(String(255), nullable=True)
 
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_valid: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_on_cooldown: Mapped[bool] = mapped_column(Boolean, default=False)
 
-class InstaramAccount(Base):
-    __tablename__ = "instagram_accounts"
+    usage_count: Mapped[int] = mapped_column(Integer, default=0)
+    daily_usage_count: Mapped[int] = mapped_column(String)
+    last_used_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    cooldown_until: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    refreshed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    username: Mapped[str] = mapped_column(String)
-    password: Mapped[str] = mapped_column(String)
-    status: Mapped[bool] = mapped_column(Boolean, default=False)
+    last_error: Mapped[str] = mapped_column(String, nullable=True)
+
+    account_id: Mapped[int] = mapped_column(ForeignKey("instagram_accounts.id"), nullable=False)
+    account: Mapped["InstagramAccount"] = relationship("InstagramAccount", back_populates="sessions")

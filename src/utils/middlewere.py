@@ -3,7 +3,7 @@ from typing import Callable, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery
 
-from src.orm.orm import check_and_update_download_limit
+from src.database.orm.orm import check_and_update_download_limit
 
 
 class Middleware(BaseMiddleware):

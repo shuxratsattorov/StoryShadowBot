@@ -5,7 +5,7 @@ from aiogram.types import BotCommand
 from src.config.config import settings
 from src.bot.handlers.handlers import startup_answer, shutdown_answer
 from src.config.loader import bot, dp
-from tasks.scheduler import start_scheduler
+from src.tasks.scheduler import start_scheduler
 from src.utils.login_insta import login_to_instagram
 from src.utils.login_scheduler import login_to_instagram1
 from src.utils.middlewere import Middleware
@@ -18,10 +18,10 @@ from src.bot.handlers.auto_fetch import follow_list
 async def main():
     logging.info("🚀  Bot ishga tushmoqda...")
 
-    login_result = login_to_instagram(settings.INSTAGRAM_USERNAME, settings.INSTAGRAM_PASSWORD)
+    login_result = await login_to_instagram(settings.INSTAGRAM_USERNAME, settings.INSTAGRAM_PASSWORD)
     logging.info(login_result)
 
-    login_result1 = login_to_instagram1(settings.INSTAGRAM_USERNAME_SCHEDULER, settings.INSTAGRAM_PASSWORD_SCHEDULER)
+    login_result1 = await login_to_instagram1(settings.INSTAGRAM_USERNAME_SCHEDULER, settings.INSTAGRAM_PASSWORD_SCHEDULER)
     logging.info(login_result1)
 
     dp.startup.register(startup_answer)

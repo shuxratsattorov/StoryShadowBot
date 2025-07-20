@@ -8,12 +8,14 @@ from instagrapi.exceptions import UserNotFound
 from aiogram.types import Message, CallbackQuery
 
 from src.config.loader import dp
-from src.config.config import CHAT_ID
+from src.config.config import settings
 from src.utils.login_insta import cl
 from src.database.orm.orm import save_search_to_db
 from src.database.orm.auto_fetch_stories import add_or_replace_autofetch_account
 from src.database.orm.monitor_acc_status import is_account_monitored, add_or_replace_monitored_account
 from src.bot.keyboards.inline_keyboard import get_profile_button, get_close_profile_button, delete_profile_button
+
+chat_id = settings.CHAT_ID
 
 
 @dp.message()
@@ -85,7 +87,7 @@ async def send_profile(message: Message, bot: Bot, save_path="media/users_media/
 
     except Exception as e:
         await message.answer(f"❌ Xatolik yuz berdi")
-        await bot.send_message(CHAT_ID, f"❌ Xatolik yuz berdi: {e}")
+        await bot.send_message(chat_id, f"❌ Xatolik yuz berdi: {e}")
 
     await bot.delete_message(message.chat.id, wait_msg.message_id)
 

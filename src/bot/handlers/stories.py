@@ -6,12 +6,14 @@ from aiogram.types import CallbackQuery
 from datetime import datetime, timedelta
 
 from src.config.loader import dp
-from src.config.config import CHAT_ID
+from src.config.config import settings
 from src.i18n.i18n_setup import _
 from src.utils.login_insta import cl
-from src.orm.orm import set_user_locale
-from src.keyboards.inline_keyboard import share_to_friends
-from src.orm.auto_fetch_stories import add_or_replace_autofetch_account, remove_follow
+from src.database.orm.orm import set_user_locale
+from src.bot.keyboards.inline_keyboard import share_to_friends
+from src.database.orm.auto_fetch_stories import add_or_replace_autofetch_account, remove_follow
+
+chat_id = settings.CHAT_ID
 
 
 @dp.callback_query(lambda c: c.data.startswith("lang_"))
@@ -84,7 +86,7 @@ async def send_stories(callback: CallbackQuery):
 
             except Exception as e:
                 await callback.message.answer(_("❌ {index}-ошибка загрузки истории.").format(index=index + 1))
-                await callback.bot.send_message(CHAT_ID, _("❌ {index}-ошибка загрузки истории: {error}").format(index=index + 1, e=e))
+                await callback.bot.send_message(chat_id, _("❌ {index}-ошибка загрузки истории: {error}").format(index=index + 1, e=e))
 
         await callback.message.answer(
             _("Нравится бот? Пожалуйста, расскажи о нем друзьям"), reply_markup=share_to_friends()
@@ -92,7 +94,7 @@ async def send_stories(callback: CallbackQuery):
 
     except Exception as e:
         await callback.message.answer(_("❌ Произошла ошибка."))
-        await callback.bot.send_message(CHAT_ID, _("❌ Произошла ошибка: {error}").format(error=e))
+        await callback.bot.send_message(chat_id, _("❌ Произошла ошибка: {error}").format(error=e))
 
 
 @dp.callback_query(F.data.startswith("follow_to_account"))

@@ -6,13 +6,15 @@ from aiogram.types import FSInputFile
 from aiogram.types import Message, CallbackQuery
 
 from src.config.loader import dp
-from src.config.config import CHAT_ID
+from src.config.config import settings
 from src.utils.login_insta import cl
 from src.database.orm.auto_fetch_stories import remove_follow
 from src.database.orm.auto_fetch_stories import get_autofetch_accounts
 from src.bot.keyboards.inline_keyboard import delete_profile_button
 from src.bot.keyboards.inline_keyboard import private_profile_button
 from src.database.orm.auto_fetch_stories import add_or_replace_autofetch_account
+
+chat_id = settings.CHAT_ID
 
 
 @dp.callback_query(F.data.startswith("follow_to_account"))
@@ -74,4 +76,4 @@ async def follow_list(message: Message, bot: Bot, tg_id: int, save_path="media/u
                     os.remove(file_name)
 
         except Exception as e:
-            await bot.send_message(CHAT_ID, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")
+            await bot.send_message(chat_id, f"Bo'lim: Auto Fetch Stories\nUser: {tg_id}\nXatolik: {e}")

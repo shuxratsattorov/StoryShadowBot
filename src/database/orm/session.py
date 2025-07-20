@@ -1,17 +1,19 @@
 from sqlalchemy import select, update
-from src.database.models.models import InstagramSession, InstaramAccount
+
+from src.database.base import get_session
+from src.database.models.models import InstagramSession, InstagramAccount
 
 
-async def get_session(account: str) ->  bytes:
+async def get_session_data(account: str) ->  bytes:
     async with get_session() as session:
-        query = select(InstagramSession.session
+        query = select(InstagramSession.session_data
         ).where(InstagramSession.account == account
         )
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
 
-async def create_or_update_session(account: str, session: bytes) -> None:
+async def create_or_update_session(account: str, session_data: bytes) -> None:
     async with get_session() as session:
         query = select(InstagramSession
         ).where(InstagramSession.account == account
@@ -23,18 +25,20 @@ async def create_or_update_session(account: str, session: bytes) -> None:
             update_query = (
                 update(InstagramSession)
                 .where(InstagramSession.account == account)
-                .values(session=session)
+                .values(session_data=session_data)
             )
             await session.execute(update_query)
         else:
-            new_session = InstagramSession(account=account, session=session)
-            session.add(new_session)
+            new_session_data = InstagramSession(account=account, session_data=session_data)
+            session.add(new_session_data)
+
+        await session.commit()   
 
 
 async def get_account(username: str) -> str:
     async with get_session() as session:
-        query = select(InstaramAccount
-        ).where(InstaramAccount.username == username
+        query = select(InstagramAccount
+        ).where(InstagramAccount.username == username
         )
         result = await session.execute(query)
         return result.scalar_one_or_none()
@@ -42,7 +46,7 @@ async def get_account(username: str) -> str:
 
 async def create_account(username: str, password: str) -> None:
     async with get_session() as session:
-        query = InstaramAccount(
+        query = InstagramAccount(
             username=username,
             password=password
         )    
