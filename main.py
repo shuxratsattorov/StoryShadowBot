@@ -18,10 +18,10 @@ from src.bot.handlers.auto_fetch import follow_list
 async def main():
     logging.info("🚀  Bot ishga tushmoqda...")
 
-    login_result = await login_to_instagram(settings.INSTAGRAM_USERNAME, settings.INSTAGRAM_PASSWORD)
+    login_result = login_to_instagram(settings.INSTAGRAM_USERNAME, settings.INSTAGRAM_PASSWORD)
     logging.info(login_result)
 
-    login_result1 = await login_to_instagram1(settings.INSTAGRAM_USERNAME_SCHEDULER, settings.INSTAGRAM_PASSWORD_SCHEDULER)
+    login_result1 = login_to_instagram1(settings.INSTAGRAM_USERNAME_SCHEDULER, settings.INSTAGRAM_PASSWORD_SCHEDULER)
     logging.info(login_result1)
 
     dp.startup.register(startup_answer)

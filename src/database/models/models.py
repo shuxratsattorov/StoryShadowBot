@@ -1,6 +1,17 @@
+from typing import Dict, Any
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, BigInteger, String, Integer, Boolean, LargeBinary, Date, DateTime
+from sqlalchemy import (
+    JSON,
+    Date, 
+    String, 
+    Integer, 
+    Boolean, 
+    DateTime,
+    ForeignKey, 
+    BigInteger, 
+    LargeBinary, 
+)
 
 from src.database.base import Base
 
@@ -43,6 +54,15 @@ class MonitorAccountStatus(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.tg_id", onupdate="CASCADE"))
 
 
+class DeviceInfo(Base):
+    __tablename__ = "device_info"
+
+    title: Mapped[str] = mapped_column(String, nullable=True)
+    device_settings: Mapped[Dict[str, Any]] = mapped_column(JSON)
+
+    acoounts: Mapped[list["InstagramAccount"]] = relationship("InstagramAccount", back_populates="device")
+
+
 class InstagramAccount(Base):
     __tablename__ = "instagram_accounts"
 
@@ -50,14 +70,15 @@ class InstagramAccount(Base):
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False)
-
+    device_id: Mapped[int] = mapped_column(ForeignKey("device_info.id"))
+    
+    device: Mapped["DeviceInfo"] = relationship("DeviceInfo", backref="accounts")
     sessions: Mapped[list["InstagramSession"]] = relationship("InstagramSession", back_populates="account")
 
 
 class InstagramSession(Base):
     __tablename__ = "instagram_sessions"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     session_data: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
     proxy: Mapped[str] = mapped_column(String(255), nullable=True)
 
@@ -66,7 +87,7 @@ class InstagramSession(Base):
     is_on_cooldown: Mapped[bool] = mapped_column(Boolean, default=False)
 
     usage_count: Mapped[int] = mapped_column(Integer, default=0)
-    daily_usage_count: Mapped[int] = mapped_column(String)
+    daily_usage_count: Mapped[int] = mapped_column(String, default=0)
     last_used_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     cooldown_until: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     refreshed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

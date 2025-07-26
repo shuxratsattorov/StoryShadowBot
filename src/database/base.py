@@ -1,7 +1,9 @@
 import os
 import sys
 from datetime import datetime
+from typing import AsyncGenerator
 from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
@@ -22,7 +24,7 @@ class Base(DeclarativeBase):
 
 
 @asynccontextmanager
-async def get_session():
+async def get_async_session()-> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
-        async with session.begin():
+        # async with session.begin():
             yield session

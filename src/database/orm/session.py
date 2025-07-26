@@ -1,11 +1,11 @@
 from sqlalchemy import select, update
 
-from src.database.base import get_session
+from src.database.base import get_async_session
 from src.database.models.models import InstagramSession, InstagramAccount
 
 
 async def get_session_data(account: str) ->  bytes:
-    async with get_session() as session:
+    async with get_async_session() as session:
         query = select(InstagramSession.session_data
         ).where(InstagramSession.account == account
         )
@@ -14,7 +14,7 @@ async def get_session_data(account: str) ->  bytes:
 
 
 async def create_or_update_session(account: str, session_data: bytes) -> None:
-    async with get_session() as session:
+    async with get_async_session() as session:
         query = select(InstagramSession
         ).where(InstagramSession.account == account
         )
@@ -36,7 +36,7 @@ async def create_or_update_session(account: str, session_data: bytes) -> None:
 
 
 async def get_account(username: str) -> str:
-    async with get_session() as session:
+    async with get_async_session() as session:
         query = select(InstagramAccount
         ).where(InstagramAccount.username == username
         )
@@ -45,7 +45,7 @@ async def get_account(username: str) -> str:
  
 
 async def create_account(username: str, password: str) -> None:
-    async with get_session() as session:
+    async with get_async_session() as session:
         query = InstagramAccount(
             username=username,
             password=password

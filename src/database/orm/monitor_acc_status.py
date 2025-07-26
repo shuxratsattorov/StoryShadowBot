@@ -1,12 +1,12 @@
 from sqlalchemy import and_, asc, update
 from sqlalchemy.future import select
 
-from src.database.base import get_session
+from src.database.base import get_async_session
 from src.database.models.models import MonitorAccountStatus
 
 
 async def add_or_replace_monitored_account(tg_id: int, username: str):
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(
             select(MonitorAccountStatus)
             .where(and_(MonitorAccountStatus.user_id == tg_id))
@@ -28,7 +28,7 @@ async def add_or_replace_monitored_account(tg_id: int, username: str):
 
 
 async def is_account_monitored(tg_id: int, username: str):
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(
             select(MonitorAccountStatus)
             .where(and_(
@@ -39,7 +39,7 @@ async def is_account_monitored(tg_id: int, username: str):
 
 
 async def get_monitored_accounts(tg_id: int) -> list[str]:
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(
             select(MonitorAccountStatus.account).where(and_(MonitorAccountStatus.user_id == tg_id)))
 
@@ -47,7 +47,7 @@ async def get_monitored_accounts(tg_id: int) -> list[str]:
 
 
 async def get_last_status_acc(username: str) -> bool:
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(
             select(MonitorAccountStatus.was_private)
             .where(and_(MonitorAccountStatus.account == username)))
@@ -57,7 +57,7 @@ async def get_last_status_acc(username: str) -> bool:
 
 
 async def update_last_status_acc(username: str, status: bool):
-    async with get_session() as session:
+    async with get_async_session() as session:
         await session.execute(
             update(MonitorAccountStatus)
             .where(and_(MonitorAccountStatus.account == username))

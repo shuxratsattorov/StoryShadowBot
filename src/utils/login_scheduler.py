@@ -11,7 +11,7 @@ from src.database.orm.session import get_session_data, create_or_update_session
 
 
 logger = logging.getLogger(__name__)
-cl = Client().private_request()
+cl = Client()
 
 
 async def login_to_instagram1(username: str, password: str) -> str:

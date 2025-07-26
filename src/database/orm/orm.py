@@ -5,14 +5,14 @@ from sqlalchemy import and_, func, update
 from sqlalchemy.future import select
 
 from src.config.config import settings
-from src.database.base import get_session
+from src.database.base import get_async_session
 from src.database.models.models import User, Search
 
 daily_donwnload_count = settings.DAILY_DOWNLOAD_COUNT
 
 
 async def add_user(tg_id: int, fullname: str, username: str):
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(select(User).where(and_(User.tg_id == tg_id)))
         user = result.scalars().first()
 
@@ -30,7 +30,7 @@ async def add_user(tg_id: int, fullname: str, username: str):
 
 
 async def save_search_to_db(tg_id: int, search_query: str):
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(
             select(Search).where(and_(Search.user_id == tg_id, Search.search == search_query))
         )
@@ -49,7 +49,7 @@ async def save_search_to_db(tg_id: int, search_query: str):
 
 
 async def get_user_statistics():
-    async with get_session() as session:
+    async with get_async_session() as session:
         now = datetime.utcnow()
 
         total_users = await session.scalar(select(func.count()).select_from(User))
@@ -78,7 +78,7 @@ async def get_user_statistics():
 
 
 async def check_and_update_download_limit(tg_id: int) -> bool:
-    async with get_session() as session:
+    async with get_async_session() as session:
         today = date.today()
         result = await session.execute(select(User).filter_by(tg_id=tg_id))
         user: User = result.scalars().first()
@@ -99,13 +99,13 @@ async def check_and_update_download_limit(tg_id: int) -> bool:
 
 
 async def get_user_locale(tg_id: int) -> str:
-    async with get_session() as session:
+    async with get_async_session() as session:
         result = await session.execute(select(User.language).where(User.tg_id == tg_id))
         return result.scalar_one_or_none()
 
 
 async def set_user_locale(tg_id: int, locale: str):
-    async with get_session() as session:
+    async with get_async_session() as session:
         await session.execute(update(User)
             .where(User.tg_id == tg_id)
             .values(language=locale)

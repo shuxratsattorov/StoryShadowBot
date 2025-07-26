@@ -1,3 +1,5 @@
+import pytz
+import datetime
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -26,11 +28,17 @@ class Settings(BaseSettings):
     AUTO_REFRESH_STORIES: int
     AUTO_REFRESH_STATUS_ACC: int
 
-    INSTAGRAM_USERNAME: str
-    INSTAGRAM_PASSWORD: str
+    #   < --- JWT --- >
+    JWT_SECRET_KEY: str | None = None
+    JWT_ALGORITHM: str | None = None
 
-    INSTAGRAM_USERNAME_SCHEDULER: str
-    INSTAGRAM_PASSWORD_SCHEDULER: str
+    #   < --- DEBUG --- >
+    DEBUG: bool
+
+    #   < --- DOMAIN --- >
+    DOMAIN: str | None = None
+    API_DOMAIN: str | None = None
+
 
     @property
     def DATABASE_URL_asyncpg(self):
@@ -43,3 +51,22 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+toshkent_tz = pytz.timezone('Asia/Tashkent')
+
+def current_time(time_zone=True):
+    if time_zone:
+        return datetime.datetime.now(tz=toshkent_tz)
+    else:
+        return datetime.datetime.now()
+
+
+origins = [
+    
+]
+
+if settings.DEBUG:
+    origins.extend([
+        
+    ])

@@ -3,13 +3,13 @@ from sqlalchemy import select
 from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.base import get_session
+from src.database.base import get_async_session
 from src.database.models.models import InstagramSession
 
 
 class SmartDispatcherRepository:
     def __init__(self):
-        self.session: AsyncSession = get_session()
+        self.session: AsyncSession = get_async_session()
         self.db = InstagramSession
         self.now = datetime.utcnow()
 
